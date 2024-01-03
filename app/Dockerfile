@@ -13,4 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
 
 COPY cert-checker.py .
 
+USER 1000
+
 CMD ["python", "cert-checker.py"]

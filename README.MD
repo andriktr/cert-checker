@@ -60,7 +60,7 @@ Then create a `sites.yaml` and put it in the CONFIG_FILE_PATH directory. The `si
 
 ### Configure cert-checker Helm chart
 
-The [cert-checker Helm chart values.yaml](cert-checker/values.yaml should be used to configure the application. The following table lists the configurable parameters of the cert-checker chart and their default values:
+The cert-checker Helm chart [values.yaml](cert-checker/values.yaml) should be used to configure the application. The following table lists the configurable parameters of the cert-checker chart and their default values:
 
 Parameter | Description | Default
 --------- | ----------- | -------

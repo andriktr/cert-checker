@@ -65,7 +65,7 @@ The [cert-checker Helm chart values.yaml](cert-checker/values.yaml should be use
 Parameter | Description | Default
 --------- | ----------- | -------
 labels | Labels to add to the Cronjob | `{}`
-sites | List of sites to check see [values.yaml](cert-checker/values.yaml) for example | `[]`
+sites | List of sites to see [values.yaml](cert-checker/values.yaml) for example | `[]`
 configPath | Path where the sites.yaml file will be mounted | `/config`
 cronjob.schedule | Schedule for the Cronjob | `0 20 * * 6`
 cronjob.name | Name of the Cronjob | `cert-checker`

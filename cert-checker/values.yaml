@@ -87,8 +87,8 @@ emailAlerts:
 # This is required if emailAlerts.enabled is set to true
 # These settings will be passed to the container as environment variables
 smtp:
-  server: ""
-  from: "cert-checker@gmail.com"
+  server: "smtp.freesmtpservers.com"
+  from: "cert-checker@sysadminas.eu"
 
 # List of additional environment variables to be passed to the container
 additionalEnvVars:

@@ -1,0 +1,98 @@
+# Default values for cert-checker.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Common labels to be added to all resources i.e foo: bar
+labels:
+  app.kubernetes.io/instance: cert-checker
+  app.kubernetes.io/environment: development
+
+# Sites to be checked this will be transformed into a configmap and passed to the container as a yaml file
+sites:
+# - name: sysadminas.eu # Domain name or IP address to be checked
+#   port: 443 # Port used by site
+#   threshold: 30 # Number of days before certificate expiration to send a warning
+#   email: [address@domain.com, another.address@domain.com] # List of email addresses to send the report to
+
+# Path to the sites.yaml file default is /config/sites.yaml omit sites.yaml as it will be added automatically
+configFilePath: "/config"
+
+# Cronjob configuration 
+cronjob:
+  # Cronjob syntax schedule to define how often report should be
+  # collected and sent
+  schedule: "*/10 * * * *"
+  name: "cert-checker"
+  annotations: {}
+  restartPolicy: "Never"
+  backoffLimit: 3
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
+  concurrencyPolicy: "Forbid"
+  timeZone: "Europe/Vilnius"
+
+# Application image configuration
+image:
+  # Repository name in format <repository>/<image-name>
+  repository: andriktr/cert-checker
+  # Image pull policy
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.1.0"
+
+# Service account configuration
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using release name
+  name: "cert-checker"
+
+# Pod level annotations
+podAnnotations: {}
+
+# Pod level security context settings
+podSecurityContext:
+  fsGroup: 1000
+
+# Container level security context settings  
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  privileged: false
+  allowPrivilegeEscalation: false
+
+# Resource requests and limits to be applied to the app container
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi 
+  limits:
+    cpu: 100m
+    memory: 256Mi
+
+
+emailAlerts:
+  # If enabled, it will send the report to the email address else 
+  # it will be printed to the application console
+  enabled: true
+
+# Settings for SMTP server used to send the report(s)
+# This is required if emailAlerts.enabled is set to true
+# These settings will be passed to the container as environment variables
+smtp:
+  server: ""
+  from: "cert-checker@gmail.com"
+
+# List of additional environment variables to be passed to the container
+additionalEnvVars:
+# - name: FOO
+#   value: BAR
+
+

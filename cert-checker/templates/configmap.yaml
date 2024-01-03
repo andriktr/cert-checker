@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+  labels:
+    {{- include "cert-checker.labels" . | nindent 4 }}
+data:
+  sites.yaml: |-
+    sites:
+      {{- toYaml .Values.sites | nindent 4 }}

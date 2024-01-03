@@ -1,0 +1,81 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.cronjob.name | default .Release.Name }}
+  labels:
+    {{- include "cert-checker.labels" . | nindent 4 }}
+  {{- if .Values.cronjob.annotations }}
+  annotations:
+    {{- toYaml .Values.cronjob.annotations | nindent 4 }}
+  {{- end }}  
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: "{{ .Values.cronjob.schedule | default "0 20 * * 6" }}"
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit | default 1 }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit | default 3 }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy | default "Forbid" }}
+  timeZone: {{ .Values.cronjob.timeZone | default "Etc/UTC" }}
+  jobTemplate:
+    metadata:
+      name: {{ .Values.cronjob.name | default .Release.Name }}
+      labels:
+        {{- include "cert-checker.labels" . | nindent 8 }}
+      {{- if .Values.cronjob.annotations }}
+      annotations:
+        {{- toYaml .Values.cronjob.annotations | nindent 8 }}
+      {{- end }}
+    spec:
+      backoffLimit: {{ .Values.cronjob.backoffLimit | default 0 }}
+      template:
+        metadata:
+          name: {{ .Values.cronjob.name | default .Release.Name }}
+          labels:
+          {{- include "cert-checker.labels" . | nindent 12 }}
+          {{- if .Values.podAnnotations }}
+          annotations:
+            {{- toYaml .Values.podAnnotations | nindent 10 }}
+          {{- end }}
+        spec:
+          restartPolicy: {{ .Values.cronjob.restartPolicy | default "Never" }}
+          containers:
+          - name: cert-checker
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+            env:
+              - name: CONFIG_FILE_PATH
+                value: {{ .Values.configFilePath | default  "/config" }}/sites.yaml
+              - name: "EMAIL_ALERTS_ENABLED"
+                value: "{{ .Values.emailAlerts.enabled }}"
+              {{- if .Values.emailAlerts }}
+              - name: "FROM_EMAIL"
+                value: "{{ .Values.smtp.from }}"
+              - name: "SMTP_SERVER"
+                value: "{{ .Values.smtp.server }}"
+              {{- end }}
+              {{- if .Values.additionalEnvVars }}
+                {{- toYaml .Values.additionalEnvVars | nindent 12 }}
+              {{- end }}
+            {{- if .Values.securityContext }}
+            volumeMounts:
+              - name: config
+                mountPath: {{ .Values.configPath | default  "/config" }}
+                readOnly: true
+
+            securityContext:
+              {{- toYaml .Values.securityContext | nindent 14 }}
+            {{- end }}
+            {{- if .Values.resources }}
+            resources:
+              {{- toYaml .Values.resources | nindent 14 }}
+            {{- end }}
+          {{- if .Values.serviceAccount.create }}
+          serviceAccountName: {{ .Values.serviceAccountName | default .Release.Name }}
+          {{- end }}
+          {{- if .Values.podSecurityContext }}
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          {{- end }}
+          volumes:
+            - name: config
+              configMap:
+                name: {{ .Release.Name }}-configmap

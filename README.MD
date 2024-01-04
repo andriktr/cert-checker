@@ -75,7 +75,7 @@ cronjob.backoffLimit | Number of retries before considering a job as failed | `0
 cronjob.failedJobsHistoryLimit | Number of failed jobs to keep | `1`
 cronjob.successfulJobsHistoryLimit | Number of successful jobs to keep | `3`
 cronjob.concurrencyPolicy | Concurrency policy for the Cronjob | `Forbid`
-cronjob.timeZone | Time zone for the Cronjob | `Europe/Vilnius`
+cronjob.timeZone | Time zone for the Cronjob | `Etc/UTC`
 image.repository | Repository name in format repository/image-name | cert-checker
 image.pullPolicy | Image pull policy | `IfNotPresent`
 image.tag | Image tag | ``
